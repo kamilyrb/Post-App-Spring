@@ -4,10 +4,17 @@ import com.kamilyrb.post_app.DataAccess.IUserDal;
 import com.kamilyrb.post_app.Entities.Role;
 import com.kamilyrb.post_app.Entities.User;
 import com.kamilyrb.post_app.Payload.ApiResponse;
+import com.kamilyrb.post_app.Payload.JwtAuthenticationResponse;
+import com.kamilyrb.post_app.Payload.LoginRequest;
 import com.kamilyrb.post_app.Payload.SignUpRequest;
+import com.kamilyrb.post_app.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,14 +29,30 @@ import java.util.Collections;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    private IUserDal userDal;
-    private PasswordEncoder passwordEncoder;
-
     @Autowired
-    public AuthController(IUserDal userDal,PasswordEncoder passwordEncoder) {
-        this.userDal = userDal;
-        this.passwordEncoder = passwordEncoder;
+    private IUserDal userDal;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private JwtTokenProvider tokenProvider;
+
+
+
+
+    @PostMapping("/signin")
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsernameOrEmail(), loginRequest.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String jwt = tokenProvider.generateToken(authentication);
+        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
+
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {

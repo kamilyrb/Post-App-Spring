@@ -22,7 +22,7 @@ public class HibernateUserDal implements IUserDal {
     @Transactional
     public User findByUsernameOrEmail(String userNameOrEmail) {
         Session session = entityManager.unwrap(Session.class);
-        return session.createQuery("from User where user.userName =: user_name_or_email or user.email =: user_name_or_email", User.class)
+        return session.createQuery("from User as u where u.userName =: user_name_or_email or u.email =: user_name_or_email", User.class)
                 .setParameter("user_name_or_email", userNameOrEmail).getSingleResult();
     }
 
