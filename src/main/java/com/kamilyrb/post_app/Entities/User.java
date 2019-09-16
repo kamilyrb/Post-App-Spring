@@ -10,8 +10,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name="user")
+@Table(name = "user")
 public class User extends DateAudit {
+    User() {
+
+    }
+
+
+    public User(@NotBlank @Size(max = 75) String name, @NotBlank @Size(max = 20) String userName, @NotBlank @Size(max = 75) String email, @NotBlank @Size(max = 50) String password) {
+        this.userName = userName;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,10 +38,10 @@ public class User extends DateAudit {
 
     @NotBlank
     @Size(max = 75)
-    private String eMail;
+    private String email;
 
     @NotBlank
-    @Size(max = 50)
+    @Size(max = 100)
     private String password;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -56,12 +67,12 @@ public class User extends DateAudit {
         this.userName = userName;
     }
 
-    public String geteMail() {
-        return eMail;
+    public String getEmail() {
+        return email;
     }
 
-    public void seteMail(String eMail) {
-        this.eMail = eMail;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getName() {

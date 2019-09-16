@@ -1,6 +1,6 @@
 package com.kamilyrb.post_app.config;
 
-import com.example.polls.security.UserPrincipal;
+import com.kamilyrb.post_app.security.UserPrincipal;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;

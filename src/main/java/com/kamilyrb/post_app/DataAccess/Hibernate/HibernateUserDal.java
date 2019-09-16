@@ -22,7 +22,7 @@ public class HibernateUserDal implements IUserDal {
     @Transactional
     public User findByUsernameOrEmail(String userNameOrEmail) {
         Session session = entityManager.unwrap(Session.class);
-        return session.createQuery("from User where user.userName =: user_name_or_email or user.email =: user_name_or_email",User.class)
+        return session.createQuery("from User where user.userName =: user_name_or_email or user.email =: user_name_or_email", User.class)
                 .setParameter("user_name_or_email", userNameOrEmail).getSingleResult();
     }
 
@@ -30,6 +30,29 @@ public class HibernateUserDal implements IUserDal {
     @Transactional
     public User findById(long userId) {
         Session session = entityManager.unwrap(Session.class);
-       return session.get(User.class, userId);
+        return session.get(User.class, userId);
+    }
+
+    @Override
+    @Transactional
+    public boolean existsByUsername(String username) {
+        Session session = entityManager.unwrap(Session.class);
+        return session.createQuery("from User as u where u.userName =: user_name",User.class).setParameter("user_name", username).uniqueResult() != null;
+    }
+
+    @Override
+    @Transactional
+    public boolean existsByEmail(String email) {
+        Session session = entityManager.unwrap(Session.class);
+        return session.createQuery("from User as u where u.email =: email",User.class).setParameter("email", email).uniqueResult() != null;
+    }
+
+    @Override
+    @Transactional
+    public User save(User user) {
+        Session session = entityManager.unwrap(Session.class);
+        Long userId =  (Long) session.save(user);
+        user.setId(userId);
+        return user;
     }
 }
